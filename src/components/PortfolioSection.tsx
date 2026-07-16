@@ -1,6 +1,6 @@
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { Instagram, X, ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { Instagram, X, ArrowUpRight, ChevronLeft, ChevronRight, Play } from "lucide-react";
 
 type Category = "All" | "Weddings" | "Pre-Wedding";
 
@@ -156,18 +156,29 @@ const PortfolioSection = () => {
                     className="group relative overflow-hidden rounded-2xl bg-charcoal border border-border hover:border-gold/40 transition-colors shrink-0 snap-start w-[75vw] sm:w-[45vw] md:w-[300px] lg:w-[320px] aspect-[9/16] text-left"
                     aria-label={`Play ${work.title}`}
                   >
-                    <iframe
-                      src={embedUrl(work.reelId)}
-                      title={work.title}
-                      loading="lazy"
-                      allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-                      allowFullScreen
-                      scrolling="no"
-                      className="absolute left-0 w-full pointer-events-none"
-                      style={{ top: "-60px", height: "calc(100% + 180px)" }}
-                    />
-                    {/* Invisible click layer so the whole tile opens the lightbox */}
-                    <span className="absolute inset-0" />
+                    {/* Cinematic placeholder — no Instagram UI. Iframe loads only in lightbox on click. */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-burgundy/40 via-charcoal to-charcoal" />
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,hsl(var(--gold)/0.18),transparent_60%)]" />
+
+                    {/* Bottom gradient for title legibility */}
+                    <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-charcoal/95 via-charcoal/50 to-transparent" />
+
+                    {/* Play button */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-16 h-16 rounded-full bg-gold/90 backdrop-blur-sm flex items-center justify-center shadow-2xl transition-transform duration-300 group-hover:scale-110">
+                        <Play size={22} className="text-charcoal ml-1" fill="currentColor" />
+                      </div>
+                    </div>
+
+                    {/* Title + location overlay */}
+                    <div className="absolute inset-x-0 bottom-0 p-5 text-left">
+                      <p className="font-sans-alt text-[0.6rem] tracking-[0.2em] uppercase text-gold-light mb-1.5">
+                        {work.category} · {work.location}
+                      </p>
+                      <h3 className="font-display text-2xl md:text-[1.6rem] leading-tight text-foreground italic">
+                        {work.title}
+                      </h3>
+                    </div>
                   </motion.button>
                 ))}
 
