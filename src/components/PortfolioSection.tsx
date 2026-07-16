@@ -1,14 +1,6 @@
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { Instagram, X, ArrowUpRight, ChevronLeft, ChevronRight, Play } from "lucide-react";
-import thumbTimelessVow from "@/assets/thumb-timeless-vow.jpg";
-import thumbSangeetNights from "@/assets/thumb-sangeet-nights.jpg";
-import thumbSacredRituals from "@/assets/thumb-sacred-rituals.jpg";
-import thumbBaraatHighlights from "@/assets/thumb-baraat-highlights.jpg";
-import thumbGoldenHour from "@/assets/thumb-golden-hour.jpg";
-import thumbCoastalRomance from "@/assets/thumb-coastal-romance.jpg";
-import thumbDesertDreams from "@/assets/thumb-desert-dreams.jpg";
-import thumbCityOfLakes from "@/assets/thumb-city-of-lakes.jpg";
 
 type Category = "All" | "Weddings" | "Pre-Wedding";
 
@@ -18,20 +10,19 @@ interface Work {
   title: string;
   category: Exclude<Category, "All">;
   location: string;
-  thumbnail: string;
 }
 
 // To swap a video: open the reel on Instagram, copy the ID from the URL
 // e.g. https://www.instagram.com/reel/ABC123xyz/  →  reelId: "ABC123xyz"
 const works: Work[] = [
-  { reelId: "DTuEYQTkRcG", title: "A Timeless Vow", category: "Weddings", location: "Udaipur", thumbnail: thumbTimelessVow },
-  { reelId: "Darw1Khs1DC", title: "Sangeet Nights", category: "Weddings", location: "Jaipur", thumbnail: thumbSangeetNights },
-  { reelId: "DaFZQ9oMleW", title: "Sacred Rituals", category: "Weddings", location: "Kolkata", thumbnail: thumbSacredRituals },
-  { reelId: "DRUT0V-EbuK", title: "Baraat Highlights", category: "Weddings", location: "Delhi", thumbnail: thumbBaraatHighlights },
-  { reelId: "DUCicWokcP5", title: "Golden Hour Story", category: "Pre-Wedding", location: "Goa", thumbnail: thumbGoldenHour },
-  { reelId: "DVQUO29ESI2", title: "Coastal Romance", category: "Pre-Wedding", location: "Pondicherry", thumbnail: thumbCoastalRomance },
-  { reelId: "DT2SI1WEY1a", title: "Desert Dreams", category: "Pre-Wedding", location: "Jaisalmer", thumbnail: thumbDesertDreams },
-  { reelId: "DUk7TQrkT7e", title: "City of Lakes", category: "Pre-Wedding", location: "Udaipur", thumbnail: thumbCityOfLakes },
+  { reelId: "DTuEYQTkRcG", title: "A Timeless Vow", category: "Weddings", location: "Udaipur" },
+  { reelId: "Darw1Khs1DC", title: "Sangeet Nights", category: "Weddings", location: "Jaipur" },
+  { reelId: "DaFZQ9oMleW", title: "Sacred Rituals", category: "Weddings", location: "Kolkata" },
+  { reelId: "DRUT0V-EbuK", title: "Baraat Highlights", category: "Weddings", location: "Delhi" },
+  { reelId: "DUCicWokcP5", title: "Golden Hour Story", category: "Pre-Wedding", location: "Goa" },
+  { reelId: "DVQUO29ESI2", title: "Coastal Romance", category: "Pre-Wedding", location: "Pondicherry" },
+  { reelId: "DT2SI1WEY1a", title: "Desert Dreams", category: "Pre-Wedding", location: "Jaisalmer" },
+  { reelId: "DUk7TQrkT7e", title: "City of Lakes", category: "Pre-Wedding", location: "Udaipur" },
 ];
 
 const categories: Category[] = ["All", "Weddings", "Pre-Wedding"];
@@ -165,15 +156,9 @@ const PortfolioSection = () => {
                     className="group relative overflow-hidden rounded-2xl bg-charcoal border border-border hover:border-gold/40 transition-colors shrink-0 snap-start w-[75vw] sm:w-[45vw] md:w-[300px] lg:w-[320px] aspect-[9/16] text-left"
                     aria-label={`Play ${work.title}`}
                   >
-                    {/* Cinematic thumbnail — no Instagram UI. Iframe loads only in lightbox on click. */}
-                    <img
-                      src={work.thumbnail}
-                      alt={`${work.title} — ${work.location}`}
-                      loading="lazy"
-                      width={576}
-                      height={1024}
-                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-                    />
+                    {/* Cinematic placeholder — no Instagram UI. Iframe loads only in lightbox on click. */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-burgundy/40 via-charcoal to-charcoal" />
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,hsl(var(--gold)/0.18),transparent_60%)]" />
 
                     {/* Bottom gradient for title legibility */}
                     <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-charcoal/95 via-charcoal/50 to-transparent" />
