@@ -20,7 +20,8 @@ const contactSchema = z.object({
 type ContactForm = z.infer<typeof contactSchema>;
 type FormErrors = Partial<Record<keyof ContactForm, string>>;
 
-const WEBHOOK_URL = "https://your-webhook-url.com/contact"; // Replace with actual webhook
+const WEB3FORMS_ENDPOINT = "https://api.web3forms.com/submit";
+const WEB3FORMS_ACCESS_KEY = "297c4f5e-1a98-4249-a2a2-b55ba5cafc90";
 
 const ContactSection = () => {
   const ref = useRef(null);
@@ -52,11 +53,27 @@ const ContactSection = () => {
 
     setStatus("loading");
     try {
-      await fetch(WEBHOOK_URL, {
+      const payload = {
+        access_key: WEB3FORMS_ACCESS_KEY,
+        subject: `New inquiry from ${result.data.fullName} — ClickVision`,
+        from_name: "ClickVision Website",
+        name: result.data.fullName,
+        email: result.data.email,
+        phone: result.data.phone,
+        project_type: result.data.projectType,
+        budget: result.data.budget,
+        message: result.data.message,
+      };
+      const res = await fetch(WEB3FORMS_ENDPOINT, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(result.data),
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(payload),
       });
+      const json = (await res.json().catch(() => ({}))) as { success?: boolean };
+      if (!res.ok || !json.success) throw new Error("submit failed");
       setStatus("success");
       setForm({});
     } catch {
