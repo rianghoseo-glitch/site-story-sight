@@ -148,6 +148,15 @@
 @utility border-gold-subtle {
   border-color: hsl(var(--gold) / 0.3);
 }
+@utility text-whatsapp {
+  color: hsl(var(--whatsapp));
+}
+@utility bg-whatsapp {
+  background-color: hsl(var(--whatsapp));
+}
+@utility border-whatsapp {
+  border-color: hsl(var(--whatsapp));
+}
 @utility cinematic-overlay {
   background: linear-gradient(
     to bottom,
