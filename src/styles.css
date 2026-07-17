@@ -46,6 +46,7 @@
   --color-surface: hsl(var(--surface));
   --color-surface-raised: hsl(var(--surface-raised));
   --color-cream: hsl(var(--cream));
+  --color-whatsapp: hsl(var(--whatsapp));
 
   --font-display: "Cormorant Garamond", serif;
   --font-body: "Inter", sans-serif;
