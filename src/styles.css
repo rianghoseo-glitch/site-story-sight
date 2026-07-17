@@ -46,6 +46,7 @@
   --color-surface: hsl(var(--surface));
   --color-surface-raised: hsl(var(--surface-raised));
   --color-cream: hsl(var(--cream));
+  --color-whatsapp: hsl(var(--whatsapp));
 
   --font-display: "Cormorant Garamond", serif;
   --font-body: "Inter", sans-serif;
@@ -85,6 +86,7 @@
   --surface: 0 0% 7%;
   --surface-raised: 0 0% 10%;
   --cream: 40 30% 92%;
+  --whatsapp: 142 70% 49%;
 }
 
 @layer base {
@@ -145,6 +147,15 @@
 }
 @utility border-gold-subtle {
   border-color: hsl(var(--gold) / 0.3);
+}
+@utility text-whatsapp {
+  color: hsl(var(--whatsapp));
+}
+@utility bg-whatsapp {
+  background-color: hsl(var(--whatsapp));
+}
+@utility border-whatsapp {
+  border-color: hsl(var(--whatsapp));
 }
 @utility cinematic-overlay {
   background: linear-gradient(
