@@ -9,6 +9,7 @@ import FounderSection from "@/components/FounderSection";
 import TeamSection from "@/components/TeamSection";
 import PricingSection from "@/components/PricingSection";
 import AddOnServices from "@/components/AddOnServices";
+import CustomPackageSection from "@/components/CustomPackageSection";
 import FAQSection from "@/components/FAQSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
@@ -32,6 +33,7 @@ function Index() {
         <TeamSection />
         <PricingSection />
         <AddOnServices />
+        <CustomPackageSection />
 
         <FAQSection />
         <ContactSection />
