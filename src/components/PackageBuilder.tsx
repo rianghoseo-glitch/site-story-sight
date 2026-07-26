@@ -441,10 +441,22 @@ const PackageBuilder = ({ open, onOpenChange }: { open: boolean; onOpenChange: (
                     <Input value={form.clientName} onChange={(e) => update("clientName", e.target.value)} maxLength={100} />
                   </Field>
                   <Field label="Phone Number*">
-                    <Input value={form.phone} onChange={(e) => update("phone", e.target.value)} maxLength={20} />
+                    <Input
+                      value={form.phone}
+                      onChange={(e) => update("phone", e.target.value)}
+                      maxLength={20}
+                      inputMode="tel"
+                      placeholder="10-digit mobile number"
+                    />
+                    {form.phone.trim() !== "" && !phoneValid && (
+                      <p className="text-xs text-red-400 mt-1 font-body">Enter a valid 10-digit Indian mobile number.</p>
+                    )}
                   </Field>
                   <Field label="Email">
-                    <Input type="email" value={form.email} onChange={(e) => update("email", e.target.value)} maxLength={255} />
+                    <Input type="email" value={form.email} onChange={(e) => update("email", e.target.value)} maxLength={255} placeholder="you@example.com" />
+                    {form.email.trim() !== "" && !emailValid && (
+                      <p className="text-xs text-red-400 mt-1 font-body">Enter a valid email address.</p>
+                    )}
                   </Field>
                   <Field label="WhatsApp Number">
                     <Input value={form.whatsapp} onChange={(e) => update("whatsapp", e.target.value)} maxLength={20} />
@@ -554,10 +566,6 @@ const PackageBuilder = ({ open, onOpenChange }: { open: boolean; onOpenChange: (
                     ))}
                   </div>
                 </div>
-                <div>
-                  <Label className="label-tag mb-3 block">Additional Services</Label>
-                  <CheckGrid items={ADDONS.map((a) => a.label)} selected={form.addons} onToggle={(v) => update("addons", toggleInArray(form.addons, v))} />
-                </div>
               </div>
             )}
 
@@ -662,7 +670,7 @@ const PackageBuilder = ({ open, onOpenChange }: { open: boolean; onOpenChange: (
                 <div className="text-center py-4">
                   <p className="label-tag text-gold mb-2">Your Custom Package Estimate</p>
                   <h3 className="font-display text-4xl md:text-5xl font-light text-gradient-gold mb-2">
-                    {formatINR(estimate.low)} – {formatINR(estimate.high)}
+                    {formatINR(estimate.total)}
                   </h3>
                   <p className="text-xs text-foreground/40 font-body max-w-md mx-auto">
                     *This is an approximate estimate. Final pricing may vary based on dates, locations, travel, accommodation and final requirements.
