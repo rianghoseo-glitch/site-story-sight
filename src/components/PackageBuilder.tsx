@@ -235,24 +235,12 @@ function calcEstimate(form: FormState) {
   const days = daysMap[form.days] ?? 1;
   const photogs = parseInt(form.photographers) || 1;
   const cinemas = parseInt(form.cinematographers) || 1;
+  const drone = form.drone === "Yes, Drone Required" ? 1 : 0;
 
-  const perDayCrew = photogs * 12000 + cinemas * 15000;
-  let base = perDayCrew * days + 25000; // base retainer
-
-  const addonsCost = form.addons.reduce((sum, a) => {
-    const found = ADDONS.find((x) => x.label === a);
-    return sum + (found?.cost ?? 0);
-  }, 0);
-  const albumCost = ALBUM_OPTIONS.find((a) => a.label === form.album)?.cost ?? 0;
-  const droneCost = form.drone === "Yes, Drone Required" && !form.addons.includes("Drone Coverage") ? 15000 : 0;
-  const filmsCost = form.films.length * 8000;
-  const travelCost = form.travel === "Yes" ? 15000 + (form.accommodation === "Yes" ? 10000 : 0) : 0;
-  const multiVenue = form.coverageType === "Multiple Venues" ? 8000 : form.coverageType === "Multiple Cities" ? 20000 : 0;
-
-  const total = base + addonsCost + albumCost + droneCost + filmsCost + travelCost + multiVenue;
-  const low = Math.round((total * 0.95) / 1000) * 1000;
-  const high = Math.round((total * 1.15) / 1000) * 1000;
-  return { low, high };
+  // Pricing: ₹7,000 per photographer / videographer / drone, per day, × 2.
+  const perDay = (photogs + cinemas + drone) * 7000;
+  const total = perDay * days * 2;
+  return { total };
 }
 
 function formatINR(n: number) {
@@ -264,6 +252,9 @@ const PackageBuilder = ({ open, onOpenChange }: { open: boolean; onOpenChange: (
   const [form, setForm] = useState<FormState>(initialState);
 
   const estimate = useMemo(() => calcEstimate(form), [form]);
+
+  const phoneValid = /^[6-9]\d{9}$/.test(form.phone.replace(/\D/g, "").replace(/^91/, ""));
+  const emailValid = form.email.trim() === "" || /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email.trim());
 
   const update = <K extends keyof FormState>(key: K, value: FormState[K]) =>
     setForm((f) => ({ ...f, [key]: value }));
@@ -340,7 +331,7 @@ const PackageBuilder = ({ open, onOpenChange }: { open: boolean; onOpenChange: (
       `Priorities: ${form.priorities.join(", ") || "-"}`,
       `Budget: ${form.budget || "-"}`,
       "",
-      `ESTIMATED INVESTMENT: ${formatINR(estimate.low)} – ${formatINR(estimate.high)}`,
+      `ESTIMATED INVESTMENT: ${formatINR(estimate.total)}`,
       "",
       "* Approximate estimate. Final pricing may vary based on dates, locations,",
       "  travel, accommodation and final requirements.",
@@ -356,7 +347,7 @@ const PackageBuilder = ({ open, onOpenChange }: { open: boolean; onOpenChange: (
 
   const canProceed = () => {
     if (step === 0) return form.eventTypes.length > 0;
-    if (step === 1) return form.clientName.trim() && form.phone.trim();
+    if (step === 1) return !!form.clientName.trim() && phoneValid && emailValid;
     return true;
   };
 
@@ -450,10 +441,22 @@ const PackageBuilder = ({ open, onOpenChange }: { open: boolean; onOpenChange: (
                     <Input value={form.clientName} onChange={(e) => update("clientName", e.target.value)} maxLength={100} />
                   </Field>
                   <Field label="Phone Number*">
-                    <Input value={form.phone} onChange={(e) => update("phone", e.target.value)} maxLength={20} />
+                    <Input
+                      value={form.phone}
+                      onChange={(e) => update("phone", e.target.value)}
+                      maxLength={20}
+                      inputMode="tel"
+                      placeholder="10-digit mobile number"
+                    />
+                    {form.phone.trim() !== "" && !phoneValid && (
+                      <p className="text-xs text-red-400 mt-1 font-body">Enter a valid 10-digit Indian mobile number.</p>
+                    )}
                   </Field>
                   <Field label="Email">
-                    <Input type="email" value={form.email} onChange={(e) => update("email", e.target.value)} maxLength={255} />
+                    <Input type="email" value={form.email} onChange={(e) => update("email", e.target.value)} maxLength={255} placeholder="you@example.com" />
+                    {form.email.trim() !== "" && !emailValid && (
+                      <p className="text-xs text-red-400 mt-1 font-body">Enter a valid email address.</p>
+                    )}
                   </Field>
                   <Field label="WhatsApp Number">
                     <Input value={form.whatsapp} onChange={(e) => update("whatsapp", e.target.value)} maxLength={20} />
@@ -563,10 +566,6 @@ const PackageBuilder = ({ open, onOpenChange }: { open: boolean; onOpenChange: (
                     ))}
                   </div>
                 </div>
-                <div>
-                  <Label className="label-tag mb-3 block">Additional Services</Label>
-                  <CheckGrid items={ADDONS.map((a) => a.label)} selected={form.addons} onToggle={(v) => update("addons", toggleInArray(form.addons, v))} />
-                </div>
               </div>
             )}
 
@@ -671,7 +670,7 @@ const PackageBuilder = ({ open, onOpenChange }: { open: boolean; onOpenChange: (
                 <div className="text-center py-4">
                   <p className="label-tag text-gold mb-2">Your Custom Package Estimate</p>
                   <h3 className="font-display text-4xl md:text-5xl font-light text-gradient-gold mb-2">
-                    {formatINR(estimate.low)} – {formatINR(estimate.high)}
+                    {formatINR(estimate.total)}
                   </h3>
                   <p className="text-xs text-foreground/40 font-body max-w-md mx-auto">
                     *This is an approximate estimate. Final pricing may vary based on dates, locations, travel, accommodation and final requirements.
