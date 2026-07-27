@@ -15,7 +15,7 @@ const team = [
   },
   {
     name: "Akash Shah",
-    role: "Lead Photographer",
+    role: "Co-Founder & Lead Photographer",
     bio: "The eye behind the lens. Akash brings years of wedding and portrait experience — with a signature style that blends candid emotion and editorial elegance.",
     initials: "AS",
     photo: null as string | null,
