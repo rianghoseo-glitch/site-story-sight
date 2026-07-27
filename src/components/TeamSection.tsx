@@ -1,7 +1,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { Instagram } from "lucide-react";
-import sunnyPhoto from "@/assets/sunny-basak";
+import sunnyPhoto from "@/assets/sunny-basak.jpg";
 
 
 const team = [
