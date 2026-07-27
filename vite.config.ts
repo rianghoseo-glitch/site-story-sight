@@ -12,4 +12,9 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  nitro: {
+    // Build for Netlify hosting. This is overridden inside Lovable builds,
+    // but applies when Netlify runs the build on its own infrastructure.
+    preset: "netlify",
+  },
 });
