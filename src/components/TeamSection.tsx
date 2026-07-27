@@ -3,14 +3,13 @@ import { useRef } from "react";
 import { Instagram } from "lucide-react";
 import sunnyPhoto from "@/assets/sunny-basak.jpg";
 
-
 const team = [
   {
     name: "Sunny Basak",
     role: "Founder & Creative Director",
     bio: "The visionary behind Click Vision. Sunny leads every project from first call to final cut — ensuring each story is captured with intention, artistry, and heart.",
     initials: "SB",
-    photo: sunnyPhoto.url,
+    photo: sunnyPhoto,
     instagram: "https://www.instagram.com/_itssunnytime",
     handle: "@_itssunnytime",
   },
@@ -81,7 +80,10 @@ const TeamSection = () => {
               <h3 className="font-display text-3xl md:text-4xl font-light text-foreground mb-4">
                 {member.name}
               </h3>
-              <div className="gold-line mb-5 group-hover:w-16 transition-all duration-500" style={{ width: "48px" }} />
+              <div
+                className="gold-line mb-5 group-hover:w-16 transition-all duration-500"
+                style={{ width: "48px" }}
+              />
               <p className="text-foreground/55 text-sm font-body leading-relaxed mb-6">
                 {member.bio}
               </p>
