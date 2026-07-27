@@ -13,8 +13,8 @@ export default defineConfig({
     server: { entry: "server" },
   },
   nitro: {
-    // Build for Netlify static hosting. This is overridden inside Lovable builds,
+    // Build for Netlify hosting. This is overridden inside Lovable builds,
     // but applies when Netlify runs the build on its own infrastructure.
-    preset: "netlify-static",
+    preset: "netlify",
   },
 });
