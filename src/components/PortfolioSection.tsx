@@ -1,6 +1,6 @@
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { Instagram, X, ArrowUpRight, ChevronLeft, ChevronRight, Play } from "lucide-react";
+import { Instagram, ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
 
 type Category = "All" | "Weddings" | "Pre-Wedding";
 
@@ -10,6 +10,11 @@ interface Work {
   title: string;
   category: Exclude<Category, "All">;
   location: string;
+  /**
+   * Self-hosted video file that plays inline on the site (no Instagram UI).
+   * Drop the .mp4 into `public/reels/` and reference it as `/reels/<file>.mp4`.
+   */
+  videoSrc?: string;
 }
 
 // To swap a video: open the reel on Instagram, copy the ID from the URL
@@ -29,11 +34,60 @@ const categories: Category[] = ["All", "Weddings", "Pre-Wedding"];
 
 const embedUrl = (id: string) => `https://www.instagram.com/reel/${id}/embed`;
 
+/** One tile: plays the self-hosted video inline, or falls back to a cropped IG embed. */
+const WorkCard = ({ work }: { work: Work }) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [failed, setFailed] = useState(false);
+  const useVideo = Boolean(work.videoSrc) && !failed;
+
+  return (
+    <>
+      {useVideo ? (
+        <video
+          ref={videoRef}
+          src={work.videoSrc}
+          className="absolute inset-0 w-full h-full object-cover"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          onError={() => setFailed(true)}
+        />
+      ) : (
+        <iframe
+          src={embedUrl(work.reelId)}
+          title={work.title}
+          loading="lazy"
+          allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+          allowFullScreen
+          scrolling="no"
+          className="absolute left-0 top-0 w-full border-0"
+          style={{
+            height: "1200px",
+            transformOrigin: "top center",
+            transform: "scale(1.6) translateY(-58px)",
+          }}
+        />
+      )}
+
+      <a
+        href={`https://www.instagram.com/reel/${work.reelId}/`}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`Open ${work.title} on Instagram`}
+        className="absolute top-3 right-3 z-10 w-9 h-9 rounded-full bg-charcoal/70 backdrop-blur-sm border border-gold/30 flex items-center justify-center text-gold-light hover:text-gold hover:border-gold transition-colors"
+      >
+        <Instagram size={16} />
+      </a>
+    </>
+  );
+};
+
 const PortfolioSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
   const [active, setActive] = useState<Category>("All");
-  const [lightbox, setLightbox] = useState<Work | null>(null);
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [paused, setPaused] = useState(false);
 
@@ -48,7 +102,7 @@ const PortfolioSection = () => {
   };
 
   useEffect(() => {
-    if (paused || lightbox) return;
+    if (paused) return;
     const el = scrollerRef.current;
     if (!el) return;
     const id = setInterval(() => {
@@ -63,7 +117,7 @@ const PortfolioSection = () => {
       }
     }, 3500);
     return () => clearInterval(id);
-  }, [paused, lightbox, active, filtered.length]);
+  }, [paused, active, filtered.length]);
 
 
   return (
@@ -144,42 +198,18 @@ const PortfolioSection = () => {
             <div className="flex gap-4 md:gap-5 pb-2">
               <AnimatePresence mode="popLayout">
                 {filtered.map((work, i) => (
-                  <motion.button
+                  <motion.div
                     key={work.reelId}
                     data-card
                     layout
-                    onClick={() => setLightbox(work)}
                     initial={{ opacity: 0, y: 24 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 12 }}
                     transition={{ duration: 0.5, delay: 0.04 * i }}
                     className="group relative overflow-hidden rounded-2xl bg-charcoal border border-border hover:border-gold/40 transition-colors shrink-0 snap-start w-[75vw] sm:w-[45vw] md:w-[300px] lg:w-[320px] aspect-[9/16] text-left"
-                    aria-label={`Play ${work.title}`}
                   >
-                    {/* Cinematic placeholder — no Instagram UI. Iframe loads only in lightbox on click. */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-burgundy/40 via-charcoal to-charcoal" />
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,hsl(var(--gold)/0.18),transparent_60%)]" />
-
-                    {/* Bottom gradient for title legibility */}
-                    <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-charcoal/95 via-charcoal/50 to-transparent" />
-
-                    {/* Play button */}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-16 h-16 rounded-full bg-gold/90 backdrop-blur-sm flex items-center justify-center shadow-2xl transition-transform duration-300 group-hover:scale-110">
-                        <Play size={22} className="text-charcoal ml-1" fill="currentColor" />
-                      </div>
-                    </div>
-
-                    {/* Title + location overlay */}
-                    <div className="absolute inset-x-0 bottom-0 p-5 text-left">
-                      <p className="font-sans-alt text-[0.6rem] tracking-[0.2em] uppercase text-gold-light mb-1.5">
-                        {work.category} · {work.location}
-                      </p>
-                      <h3 className="font-display text-2xl md:text-[1.6rem] leading-tight text-foreground italic">
-                        {work.title}
-                      </h3>
-                    </div>
-                  </motion.button>
+                    <WorkCard work={work} />
+                  </motion.div>
                 ))}
 
               </AnimatePresence>
@@ -232,46 +262,6 @@ const PortfolioSection = () => {
         </motion.div>
       </div>
 
-      {/* Lightbox */}
-      <AnimatePresence>
-        {lightbox && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setLightbox(null)}
-            className="fixed inset-0 z-[100] bg-charcoal/95 backdrop-blur-sm flex items-center justify-center p-4 md:p-10"
-          >
-            <button
-              onClick={() => setLightbox(null)}
-              className="absolute top-6 right-6 text-foreground/70 hover:text-gold transition-colors"
-              aria-label="Close"
-            >
-              <X size={28} />
-            </button>
-            <motion.div
-              initial={{ scale: 0.96, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.96, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-md"
-            >
-              <div className="relative aspect-[9/16] w-full bg-charcoal overflow-hidden rounded-2xl">
-                <iframe
-                  src={embedUrl(lightbox.reelId)}
-                  title={lightbox.title}
-                  allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-                  allowFullScreen
-                  scrolling="no"
-                  className="absolute left-0 w-full"
-                  style={{ top: "-60px", height: "calc(100% + 180px)" }}
-                />
-              </div>
-
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </section>
   );
 };
