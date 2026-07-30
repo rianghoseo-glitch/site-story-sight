@@ -10,6 +10,11 @@ interface Work {
   title: string;
   category: Exclude<Category, "All">;
   location: string;
+  /**
+   * Self-hosted video file that plays inline on the site (no Instagram UI).
+   * Drop the .mp4 into `public/reels/` and reference it as `/reels/<file>.mp4`.
+   */
+  videoSrc?: string;
 }
 
 // To swap a video: open the reel on Instagram, copy the ID from the URL
@@ -28,6 +33,56 @@ const works: Work[] = [
 const categories: Category[] = ["All", "Weddings", "Pre-Wedding"];
 
 const embedUrl = (id: string) => `https://www.instagram.com/reel/${id}/embed`;
+
+/** One tile: plays the self-hosted video inline, or falls back to a cropped IG embed. */
+const WorkCard = ({ work }: { work: Work }) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [failed, setFailed] = useState(false);
+  const useVideo = Boolean(work.videoSrc) && !failed;
+
+  return (
+    <>
+      {useVideo ? (
+        <video
+          ref={videoRef}
+          src={work.videoSrc}
+          className="absolute inset-0 w-full h-full object-cover"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          onError={() => setFailed(true)}
+        />
+      ) : (
+        <iframe
+          src={embedUrl(work.reelId)}
+          title={work.title}
+          loading="lazy"
+          allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+          allowFullScreen
+          scrolling="no"
+          className="absolute left-0 top-0 w-full border-0"
+          style={{
+            height: "1200px",
+            transformOrigin: "top center",
+            transform: "scale(1.6) translateY(-58px)",
+          }}
+        />
+      )}
+
+      <a
+        href={`https://www.instagram.com/reel/${work.reelId}/`}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`Open ${work.title} on Instagram`}
+        className="absolute top-3 right-3 z-10 w-9 h-9 rounded-full bg-charcoal/70 backdrop-blur-sm border border-gold/30 flex items-center justify-center text-gold-light hover:text-gold hover:border-gold transition-colors"
+      >
+        <Instagram size={16} />
+      </a>
+    </>
+  );
+};
 
 const PortfolioSection = () => {
   const ref = useRef(null);
