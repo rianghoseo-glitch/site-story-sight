@@ -135,9 +135,9 @@ const ADDONS = [
 
 const ALBUM_OPTIONS = [
   { label: "No Album", cost: 0 },
-  { label: "Standard Album", cost: 12000 },
-  { label: "Premium Album", cost: 22000 },
-  { label: "Luxury Album", cost: 40000 },
+  { label: "Standard Album", cost: 8000 },
+  { label: "Premium Album", cost: 12000 },
+  { label: "Luxury Album", cost: 20000 },
 ];
 
 const DIGITAL_DELIVERABLES = [
@@ -239,8 +239,9 @@ function calcEstimate(form: FormState) {
 
   // Pricing: ₹7,000 per photographer / videographer / drone, per day, × 2.
   const perDay = (photogs + cinemas + drone) * 7000;
-  const total = perDay * days * 2;
-  return { total };
+  const albumCost = ALBUM_OPTIONS.find((a) => a.label === form.album)?.cost ?? 0;
+  const total = perDay * days * 2 + albumCost;
+  return { total, albumCost };
 }
 
 function formatINR(n: number) {
@@ -320,7 +321,7 @@ const PackageBuilder = ({ open, onOpenChange }: { open: boolean; onOpenChange: (
       `Drone: ${form.drone}`,
       "",
       `Add-ons: ${form.addons.join(", ") || "-"}`,
-      `Album: ${form.album}`,
+      `Album: ${form.album}${estimate.albumCost > 0 ? ` (${formatINR(estimate.albumCost)})` : ""}`,
       `Digital: ${form.digital.join(", ") || "-"}`,
       `Films: ${form.films.join(", ") || "-"}`,
       "",
@@ -498,7 +499,12 @@ const PackageBuilder = ({ open, onOpenChange }: { open: boolean; onOpenChange: (
                       )}
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <Input placeholder="Event (e.g. Haldi)" value={fn.event} onChange={(e) => updateFunction(fn.id, { event: e.target.value })} maxLength={60} />
+                      <Select value={fn.event} onValueChange={(v) => updateFunction(fn.id, { event: v })}>
+                        <SelectTrigger><SelectValue placeholder="Select event" /></SelectTrigger>
+                        <SelectContent>
+                          {EVENT_TYPES.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
                       <Input type="date" value={fn.date} onChange={(e) => updateFunction(fn.id, { date: e.target.value })} />
                       <Select value={fn.time} onValueChange={(v) => updateFunction(fn.id, { time: v })}>
                         <SelectTrigger><SelectValue placeholder="Time of day" /></SelectTrigger>
@@ -575,7 +581,10 @@ const PackageBuilder = ({ open, onOpenChange }: { open: boolean; onOpenChange: (
                   <Label className="label-tag mb-3 block">Wedding Album</Label>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                     {ALBUM_OPTIONS.map((a) => (
-                      <OptionPill key={a.label} active={form.album === a.label} onClick={() => update("album", a.label)}>{a.label}</OptionPill>
+                      <OptionPill key={a.label} active={form.album === a.label} onClick={() => update("album", a.label)}>
+                        {a.label}
+                        {a.cost > 0 && <span className="block text-xs opacity-70 mt-0.5">{formatINR(a.cost)}</span>}
+                      </OptionPill>
                     ))}
                   </div>
                 </div>
@@ -688,7 +697,7 @@ const PackageBuilder = ({ open, onOpenChange }: { open: boolean; onOpenChange: (
                     ["Photographers", form.photographers],
                     ["Cinematographers", form.cinematographers],
                     ["Drone", form.drone],
-                    ["Album", form.album],
+                    ["Album", form.album + (estimate.albumCost > 0 ? ` (${formatINR(estimate.albumCost)})` : "")],
                   ]} />
                 </div>
 
