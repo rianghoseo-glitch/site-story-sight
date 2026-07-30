@@ -161,8 +161,12 @@ const PortfolioSection = () => {
                       allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
                       allowFullScreen
                       scrolling="no"
-                      className="absolute left-1/2 -translate-x-1/2 w-[125%] border-0"
-                      style={{ top: "-56px", height: "1200px" }}
+                      className="absolute left-0 top-0 w-full border-0 pointer-events-auto"
+                      style={{
+                        height: "1200px",
+                        transformOrigin: "top center",
+                        transform: "scale(1.55) translateY(-58px)",
+                      }}
                     />
 
                     {/* Instagram link */}
