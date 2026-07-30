@@ -208,32 +208,7 @@ const PortfolioSection = () => {
                     transition={{ duration: 0.5, delay: 0.04 * i }}
                     className="group relative overflow-hidden rounded-2xl bg-charcoal border border-border hover:border-gold/40 transition-colors shrink-0 snap-start w-[75vw] sm:w-[45vw] md:w-[300px] lg:w-[320px] aspect-[9/16] text-left"
                   >
-                    {/* Live video, cropped so no Instagram chrome is visible */}
-                    <iframe
-                      src={embedUrl(work.reelId)}
-                      title={work.title}
-                      loading="lazy"
-                      allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-                      allowFullScreen
-                      scrolling="no"
-                      className="absolute left-0 top-0 w-full border-0 pointer-events-auto"
-                      style={{
-                        height: "1200px",
-                        transformOrigin: "top center",
-                        transform: "scale(1.55) translateY(-58px)",
-                      }}
-                    />
-
-                    {/* Instagram link */}
-                    <a
-                      href={`https://www.instagram.com/reel/${work.reelId}/`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={`Open ${work.title} on Instagram`}
-                      className="absolute top-3 right-3 z-10 w-9 h-9 rounded-full bg-charcoal/70 backdrop-blur-sm border border-gold/30 flex items-center justify-center text-gold-light hover:text-gold hover:border-gold transition-colors"
-                    >
-                      <Instagram size={16} />
-                    </a>
+                    <WorkCard work={work} />
                   </motion.div>
                 ))}
 
