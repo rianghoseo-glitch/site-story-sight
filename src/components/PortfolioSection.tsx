@@ -162,7 +162,7 @@ const PortfolioSection = () => {
                       allowFullScreen
                       scrolling="no"
                       className="absolute left-1/2 -translate-x-1/2 w-[125%] border-0"
-                      style={{ top: "-14%", height: "150%" }}
+                      style={{ top: "-56px", height: "1200px" }}
                     />
 
                     {/* Instagram link */}
