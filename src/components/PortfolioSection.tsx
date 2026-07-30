@@ -1,6 +1,6 @@
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { Instagram, X, ArrowUpRight, ChevronLeft, ChevronRight, Play } from "lucide-react";
+import { Instagram, ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
 
 type Category = "All" | "Weddings" | "Pre-Wedding";
 
@@ -33,7 +33,6 @@ const PortfolioSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
   const [active, setActive] = useState<Category>("All");
-  const [lightbox, setLightbox] = useState<Work | null>(null);
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [paused, setPaused] = useState(false);
 
@@ -48,7 +47,7 @@ const PortfolioSection = () => {
   };
 
   useEffect(() => {
-    if (paused || lightbox) return;
+    if (paused) return;
     const el = scrollerRef.current;
     if (!el) return;
     const id = setInterval(() => {
@@ -63,7 +62,7 @@ const PortfolioSection = () => {
       }
     }, 3500);
     return () => clearInterval(id);
-  }, [paused, lightbox, active, filtered.length]);
+  }, [paused, active, filtered.length]);
 
 
   return (
