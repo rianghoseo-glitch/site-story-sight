@@ -1,8 +1,11 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Play } from "lucide-react";
+import { Wand2 } from "lucide-react";
 import heroBg from "@/assets/portfolio-wedding-1.jpg";
+import PackageBuilder from "./PackageBuilder";
 
 const HeroSection = () => {
+  const [builderOpen, setBuilderOpen] = useState(false);
   const handleScroll = (id: string) => {
     const el = document.querySelector(id);
     if (el) el.scrollIntoView({ behavior: "smooth" });
@@ -74,11 +77,11 @@ const HeroSection = () => {
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
           <button
-            onClick={() => handleScroll("#portfolio")}
+            onClick={() => setBuilderOpen(true)}
             className="btn-gold rounded-none inline-flex items-center gap-3"
           >
-            <Play size={14} fill="currentColor" />
-            View Our Work
+            <Wand2 size={14} />
+            Create Custom Package
           </button>
           <button
             onClick={() => handleScroll("#contact")}
@@ -119,6 +122,8 @@ const HeroSection = () => {
       >
         <div className="w-px h-12 bg-gradient-to-b from-transparent via-gold/50 to-gold/10" />
       </motion.div>
+
+      <PackageBuilder open={builderOpen} onOpenChange={setBuilderOpen} />
     </section>
   );
 };
