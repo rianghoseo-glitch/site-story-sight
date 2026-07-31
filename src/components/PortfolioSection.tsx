@@ -92,7 +92,6 @@ const WorkCard = ({ work }: { work: Work }) => {
           className="absolute inset-0 w-full h-full object-cover pointer-events-none select-none"
           autoPlay
           muted
-          defaultValue={undefined}
           loop
           playsInline
           controls={false}
