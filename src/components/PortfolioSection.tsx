@@ -40,6 +40,49 @@ const WorkCard = ({ work }: { work: Work }) => {
   const [failed, setFailed] = useState(false);
   const useVideo = Boolean(work.videoSrc) && !failed;
 
+  // Safari/iOS only honour inline autoplay when `muted` is set on the element
+  // itself (React's prop can be dropped during hydration), and both browsers
+  // reject autoplay until the element is on-screen — so drive play() manually.
+  useEffect(() => {
+    const el = videoRef.current;
+    if (!el || !useVideo) return;
+
+    el.muted = true;
+    el.defaultMuted = true;
+    el.volume = 0;
+    el.setAttribute("muted", "");
+    el.setAttribute("playsinline", "");
+    el.setAttribute("webkit-playsinline", "");
+
+    const tryPlay = () => {
+      const p = el.play();
+      if (p && typeof p.catch === "function") p.catch(() => {});
+    };
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) tryPlay();
+          else el.pause();
+        }
+      },
+      { threshold: 0.15 },
+    );
+    io.observe(el);
+
+    el.addEventListener("loadeddata", tryPlay);
+    el.addEventListener("canplay", tryPlay);
+    document.addEventListener("visibilitychange", tryPlay);
+    tryPlay();
+
+    return () => {
+      io.disconnect();
+      el.removeEventListener("loadeddata", tryPlay);
+      el.removeEventListener("canplay", tryPlay);
+      document.removeEventListener("visibilitychange", tryPlay);
+    };
+  }, [useVideo, work.videoSrc]);
+
   return (
     <>
       {useVideo ? (
@@ -49,12 +92,13 @@ const WorkCard = ({ work }: { work: Work }) => {
           className="absolute inset-0 w-full h-full object-cover pointer-events-none select-none"
           autoPlay
           muted
+          defaultValue={undefined}
           loop
           playsInline
           controls={false}
           disablePictureInPicture
           controlsList="nodownload noplaybackrate nofullscreen noremoteplayback"
-          preload="metadata"
+          preload="auto"
           onError={() => setFailed(true)}
         />
       ) : (
