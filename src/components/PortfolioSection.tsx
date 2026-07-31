@@ -46,11 +46,14 @@ const WorkCard = ({ work }: { work: Work }) => {
         <video
           ref={videoRef}
           src={work.videoSrc}
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover pointer-events-none select-none"
           autoPlay
           muted
           loop
           playsInline
+          controls={false}
+          disablePictureInPicture
+          controlsList="nodownload noplaybackrate nofullscreen noremoteplayback"
           preload="metadata"
           onError={() => setFailed(true)}
         />
@@ -207,7 +210,7 @@ const PortfolioSection = () => {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 12 }}
                     transition={{ duration: 0.5, delay: 0.04 * i }}
-                    className="group relative overflow-hidden rounded-2xl bg-charcoal border border-border hover:border-gold/40 transition-colors shrink-0 snap-start w-[75vw] sm:w-[45vw] md:w-[300px] lg:w-[320px] aspect-[9/16] text-left"
+                    className="group relative overflow-hidden rounded-2xl bg-charcoal p-0 shrink-0 snap-start w-[75vw] sm:w-[45vw] md:w-[300px] lg:w-[320px] aspect-[9/16] text-left"
                   >
                     <WorkCard work={work} />
                   </motion.div>
