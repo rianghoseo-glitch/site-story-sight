@@ -20,7 +20,7 @@ const team = [
     role: "Co-Founder & Lead Photographer",
     bio: "The eye behind the lens. Akash brings years of wedding and portrait experience — with a signature style that blends candid emotion and editorial elegance.",
     initials: "AS",
-    photo: null as string | null,
+    photo: akashPhoto.url,
     instagram: "https://www.instagram.com/fotografakash",
     handle: "@fotografakash",
   },
