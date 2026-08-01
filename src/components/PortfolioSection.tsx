@@ -1,6 +1,11 @@
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { Instagram, ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { Instagram, ArrowUpRight, ChevronLeft, ChevronRight, X } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import reel1 from "@/assets/reels/reel-1.mp4.asset.json";
 import reel2 from "@/assets/reels/reel-2.mp4.asset.json";
 import reel3 from "@/assets/reels/reel-3.mp4.asset.json";
@@ -43,7 +48,13 @@ const categories: Category[] = ["All", "Weddings", "Pre-Wedding"];
 const IG_PROFILE = "https://www.instagram.com/clickvision.in/";
 
 /** One tile: plays the self-hosted video inline. No Instagram embed, ever. */
-const WorkCard = ({ work }: { work: Work }) => {
+const WorkCard = ({
+  work,
+  onSelect,
+}: {
+  work: Work;
+  onSelect?: (work: Work) => void;
+}) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [failed, setFailed] = useState(false);
   const useVideo = Boolean(work.videoSrc) && !failed;
@@ -93,6 +104,13 @@ const WorkCard = ({ work }: { work: Work }) => {
 
   return (
     <>
+      <button
+        type="button"
+        aria-label={`Open ${work.title} in large view`}
+        onClick={() => onSelect?.(work)}
+        className="absolute inset-0 z-0 w-full h-full"
+      />
+
       {useVideo ? (
         <video
           ref={videoRef}
@@ -131,7 +149,8 @@ const WorkCard = ({ work }: { work: Work }) => {
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Open our Instagram profile"
-        className="absolute top-3 right-3 z-10 w-9 h-9 rounded-full bg-charcoal/70 backdrop-blur-sm border border-gold/30 flex items-center justify-center text-gold-light hover:text-gold hover:border-gold transition-colors"
+        onClick={(e) => e.stopPropagation()}
+        className="absolute top-3 right-3 z-20 w-9 h-9 rounded-full bg-charcoal/70 backdrop-blur-sm border border-gold/30 flex items-center justify-center text-gold-light hover:text-gold hover:border-gold transition-colors"
       >
         <Instagram size={16} />
       </a>
@@ -145,6 +164,8 @@ const PortfolioSection = () => {
   const [active, setActive] = useState<Category>("All");
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [paused, setPaused] = useState(false);
+  const [selectedWork, setSelectedWork] = useState<Work | null>(null);
+  const lightboxVideoRef = useRef<HTMLVideoElement>(null);
 
   const filtered = active === "All" ? works : works.filter((w) => w.category === active);
 
@@ -155,6 +176,15 @@ const PortfolioSection = () => {
     const step = card ? card.offsetWidth + 20 : el.clientWidth * 0.8;
     el.scrollBy({ left: dir * step, behavior: "smooth" });
   };
+
+  useEffect(() => {
+    if (!selectedWork?.videoSrc) return;
+    const el = lightboxVideoRef.current;
+    if (!el) return;
+    el.muted = false;
+    el.volume = 1;
+    el.play().catch(() => {});
+  }, [selectedWork]);
 
   useEffect(() => {
     if (paused) return;
@@ -261,9 +291,9 @@ const PortfolioSection = () => {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 12 }}
                     transition={{ duration: 0.5, delay: 0.04 * i }}
-                    className="group relative overflow-hidden rounded-2xl bg-charcoal p-0 shrink-0 snap-start w-[75vw] sm:w-[45vw] md:w-[300px] lg:w-[320px] aspect-[9/16] text-left"
+                    className="group relative overflow-hidden rounded-2xl bg-charcoal p-0 shrink-0 snap-start w-[75vw] sm:w-[45vw] md:w-[300px] lg:w-[320px] aspect-[9/16] text-left cursor-pointer"
                   >
-                    <WorkCard work={work} />
+                    <WorkCard work={work} onSelect={setSelectedWork} />
                   </motion.div>
                 ))}
 
@@ -317,6 +347,50 @@ const PortfolioSection = () => {
         </motion.div>
       </div>
 
+      <Dialog open={!!selectedWork} onOpenChange={(open) => !open && setSelectedWork(null)}>
+        <DialogContent
+          className="w-auto max-w-[95vw] max-h-[95vh] p-0 border-none bg-black/95 overflow-hidden"
+          aria-describedby="lightbox-desc"
+        >
+          <DialogTitle className="sr-only">
+            {selectedWork ? selectedWork.title : "Work preview"}
+          </DialogTitle>
+          <p id="lightbox-desc" className="sr-only">
+            Large preview of the selected video with sound.
+          </p>
+
+          {selectedWork?.videoSrc ? (
+            <div className="relative h-[90vh] max-w-[95vw] aspect-[9/16]">
+              <video
+                ref={lightboxVideoRef}
+                key={selectedWork.reelId}
+                src={selectedWork.videoSrc}
+                className="w-full h-full object-contain"
+                autoPlay
+                muted={false}
+                loop
+                playsInline
+                controls
+                preload="auto"
+              />
+            </div>
+          ) : (
+            <div className="flex items-center justify-center h-[70vh] w-[40vw] text-foreground/70 font-body">
+              No video available for this work.
+            </div>
+          )}
+
+          <a
+            href={`https://www.instagram.com/clickvision.in/`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="absolute top-4 right-14 z-20 w-10 h-10 rounded-full bg-charcoal/80 backdrop-blur-sm border border-gold/30 flex items-center justify-center text-gold-light hover:text-gold hover:border-gold transition-colors"
+            aria-label="Open Instagram profile"
+          >
+            <Instagram size={18} />
+          </a>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };
