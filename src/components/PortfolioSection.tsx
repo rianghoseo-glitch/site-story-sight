@@ -1,6 +1,14 @@
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { Instagram, ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
+import reel1 from "@/assets/reels/reel-1.mp4.asset.json";
+import reel2 from "@/assets/reels/reel-2.mp4.asset.json";
+import reel3 from "@/assets/reels/reel-3.mp4.asset.json";
+import reel4 from "@/assets/reels/reel-4.mp4.asset.json";
+import reel5 from "@/assets/reels/reel-5.mp4.asset.json";
+import reel6 from "@/assets/reels/reel-6.mp4.asset.json";
+import reel7 from "@/assets/reels/reel-7.mp4.asset.json";
+import reel8 from "@/assets/reels/reel-8.mp4.asset.json";
 
 type Category = "All" | "Weddings" | "Pre-Wedding";
 
@@ -20,14 +28,14 @@ interface Work {
 // To swap a video: open the reel on Instagram, copy the ID from the URL
 // e.g. https://www.instagram.com/reel/ABC123xyz/  →  reelId: "ABC123xyz"
 const works: Work[] = [
-  { reelId: "DTuEYQTkRcG", title: "A Timeless Vow", category: "Weddings", location: "Udaipur" },
-  { reelId: "Darw1Khs1DC", title: "Sangeet Nights", category: "Weddings", location: "Jaipur" },
-  { reelId: "DaFZQ9oMleW", title: "Sacred Rituals", category: "Weddings", location: "Kolkata" },
-  { reelId: "DRUT0V-EbuK", title: "Baraat Highlights", category: "Weddings", location: "Delhi" },
-  { reelId: "DUCicWokcP5", title: "Golden Hour Story", category: "Pre-Wedding", location: "Goa" },
-  { reelId: "DVQUO29ESI2", title: "Coastal Romance", category: "Pre-Wedding", location: "Pondicherry" },
-  { reelId: "DT2SI1WEY1a", title: "Desert Dreams", category: "Pre-Wedding", location: "Jaisalmer" },
-  { reelId: "DUk7TQrkT7e", title: "City of Lakes", category: "Pre-Wedding", location: "Udaipur" },
+  { reelId: "DTuEYQTkRcG", title: "A Timeless Vow", category: "Weddings", location: "Udaipur", videoSrc: reel1.url },
+  { reelId: "Darw1Khs1DC", title: "Sangeet Nights", category: "Weddings", location: "Jaipur", videoSrc: reel2.url },
+  { reelId: "DaFZQ9oMleW", title: "Sacred Rituals", category: "Weddings", location: "Kolkata", videoSrc: reel3.url },
+  { reelId: "DRUT0V-EbuK", title: "Baraat Highlights", category: "Weddings", location: "Delhi", videoSrc: reel4.url },
+  { reelId: "DUCicWokcP5", title: "Golden Hour Story", category: "Pre-Wedding", location: "Goa", videoSrc: reel5.url },
+  { reelId: "DVQUO29ESI2", title: "Coastal Romance", category: "Pre-Wedding", location: "Pondicherry", videoSrc: reel6.url },
+  { reelId: "DT2SI1WEY1a", title: "Desert Dreams", category: "Pre-Wedding", location: "Jaisalmer", videoSrc: reel7.url },
+  { reelId: "DUk7TQrkT7e", title: "City of Lakes", category: "Pre-Wedding", location: "Udaipur", videoSrc: reel8.url },
 ];
 
 const categories: Category[] = ["All", "Weddings", "Pre-Wedding"];
